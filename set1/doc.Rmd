@@ -160,8 +160,56 @@ That is basically the same of the intersection (from the code perspective) but, 
 
 # Question 6
 
+A naive evaluation of x **AND NOT** y should first calculate **NOT** y, that is to find the documents in which y is not present, and then evaluate x **AND** (**NOT** y).
+In order to do that, all the documents must be checked, and this operation (and therefore the original query) executes in $O(n)$, where $n$ is the number of documents.
+An algorithm that evaluates the query efficiently could be based on the one we saw during lecture for the intersection:
+
+```python
+IntersectNot(p, q)
+1  answer <- { }
+2  while p != null and q != null do
+3  if docID(p) = docID(q) then
+4    p <- next(p)
+5    q <- next(q)
+6  else if docID(p) < docID(q) then
+7    Add(answer , docID(p))
+8    p <- next(p)
+9  else
+10   q <- next(q)
+11 end while
+12 return answer
+```
+
+That is basically the same of the intersection (from the code perspective) but, instead of adding to the answer the document that has both `p` and `q`, this algorithm adds only the documents that have `p` but not `q`.
+
 # Question 7
+
+I tried to apply the queries on the two most famous web search engines, Google Search ([google.com](google.com)) and Bing Search ([bing.com](bing.com)), and I got the following results.
+
+## hacker
+
+| **Search Engine** | **hacker** | **hacker AND hacker** | **hacker OR hacker** |
+|---|---|---|---|
+| Google | 377 million | 681 million | 449 million |
+| Bing | 34.7 million | 145 million | 34.8 million |
+
+### Considerations
+
+As anticipated, the results don't make sense in term of boolean logic for both the cases: `hacker` **AND** `hacker`, in fact, should be equal or less than only `hacker`, depending on the interpretation (it could be either that the **AND** is useless or is meant as "two occurrencies on the same document"). The same applies for `hacker` **OR** `hacker`, which should be equal or more than only `hacker`. I think that an explanation for this are the enormous amount of data that the search engines own: in order for the query to be fast and usable from a normal user, the result is often truncated.
+
+## author, prize
+
+| **Search Engine** | **author** | **prize** | **author OR prize** |
+|---|---|---|---|
+| Google | 3880 million | 582 million | 4030 million |
+| Bing | 74.7 million | 44.8 million | 95.7 million |
+
+### Considerations
+
+Since **OR** is an unionizing operation, the number of author **OR** prize should be somewhere between the sum of the separated results and the highest number of the two taken separately. In this case, this condition is respected and makes sense.
 
 # Question 8
 
-![Trie for the given set of words](./tries.png){width=400px}
+(see next page)
+
+![Trie for the given set of items](./tries.png){width=450px}
